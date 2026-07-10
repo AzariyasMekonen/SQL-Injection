@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexaCorp Dashboard</title>
+    <link rel="stylesheet" href="/dashboard.css" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">N</div>
+          <div>
+            <div>NexaCorp</div>
+            <div style="font-size: 0.82rem; color: #94a3b8; font-weight: 500;">Operations Portal</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a class="active" href="/dashboard.html">Overview</a>
+          <a href="/catalog.html">Product Catalog</a>
+          <a href="/">Sign Out</a>
+        </nav>
+
+        <div class="sidebar-card">
+          <strong>Welcome back</strong>
+          <p>Monitor business activity and browse the internal catalog from one place.</p>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <div class="topbar">
+          <div>
+            <h1>Executive overview</h1>
+            <p>Track operations and access key tools from a polished internal dashboard.</p>
+          </div>
+          <div class="badge">● Live</div>
+        </div>
+
+        <section class="grid grid-3">
+          <div class="card metric">
+            <div><span>Active users</span><strong id="users-count">0</strong></div>
+            <span class="tag ok">Live</span>
+          </div>
+          <div class="card metric">
+            <div><span>Catalog items</span><strong id="products-count">0</strong></div>
+            <span class="tag warn">DB</span>
+          </div>
+          <div class="card metric">
+            <div><span>Open tasks</span><strong id="tasks-count">0</strong></div>
+            <span class="tag danger">Tracked</span>
+          </div>
+        </section>
+
+        <section class="grid grid-2" style="margin-top: 16px;">
+          <div class="card">
+            <h3>Recent tasks</h3>
+            <div id="task-list" class="list"></div>
+          </div>
+
+          <div class="card">
+            <h3>Users</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>User</th><th>Email</th><th>Role</th></tr>
+                </thead>
+                <tbody id="user-table">
+                  <tr><td colspan="3">Loading…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      async function loadDashboardData() {
+        const response = await fetch('/api/lab/stats');
+        const data = await response.json();
+
+        document.getElementById('users-count').textContent = data.stats?.users ?? 0;
+        document.getElementById('products-count').textContent = data.stats?.products ?? 0;
+        document.getElementById('tasks-count').textContent = data.stats?.tasks ?? 0;
+
+        const taskList = document.getElementById('task-list');
+        taskList.innerHTML = (data.tasks || []).slice(0, 4).map((task) => `
+          <div class="list-item">
+            <span>${task.title}</span>
+            <strong>${task.status}</strong>
+          </div>
+        `).join('');
+
+        const userTable = document.getElementById('user-table');
+        userTable.innerHTML = (data.users || []).map((user) => `
+          <tr>
+            <td>${user.username}</td>
+            <td>${user.email}</td>
+            <td>${user.role}</td>
+          </tr>
+        `).join('');
+      }
+
+      loadDashboardData();
+    </script>
+  </body>
+</html>

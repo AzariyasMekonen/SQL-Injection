@@ -42,6 +42,17 @@ export async function getDb(): Promise<Database> {
     INSERT INTO products VALUES (8,'10GbE Switch 24-Port', 'Network',    699.99,  14, 'SKU-008', 280.00, 'supplier_key=SW-10G');
     INSERT INTO products VALUES (9,'Rack UPS 2000VA',      'Power',      529.99,  33, 'SKU-009', 195.00, 'supplier_key=UPS-RK');
     INSERT INTO products VALUES(10,'Biometric Door Lock',  'Security',   249.99,  88, 'SKU-010',  72.00, 'supplier_key=BIO-DL');
+
+    CREATE TABLE tasks (
+      id INTEGER PRIMARY KEY,
+      title TEXT NOT NULL,
+      owner TEXT,
+      status TEXT DEFAULT 'Open',
+      due_date TEXT
+    );
+    INSERT INTO tasks VALUES (1,'Review vendor pricing','alice','In Progress','2026-07-11');
+    INSERT INTO tasks VALUES (2,'Approve inventory update','bob','Pending','2026-07-12');
+    INSERT INTO tasks VALUES (3,'Sync product catalog','admin','Done','2026-07-10');
   `);
 
   return db;

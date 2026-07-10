@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexaCorp Catalog</title>
+    <link rel="stylesheet" href="/dashboard.css" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">N</div>
+          <div>
+            <div>NexaCorp</div>
+            <div style="font-size: 0.82rem; color: #94a3b8; font-weight: 500;">Operations Portal</div>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="/dashboard.html">Overview</a>
+          <a class="active" href="/catalog.html">Product Catalog</a>
+          <a href="/">Sign Out</a>
+        </nav>
+
+        <div class="sidebar-card">
+          <strong>Catalog search</strong>
+          <p>Search the product inventory from the internal portal.</p>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <div class="topbar">
+          <div>
+            <h1>Product catalog</h1>
+            <p>Search products by name or category to find what you need.</p>
+          </div>
+          <div class="badge">🔎 Search</div>
+        </div>
+
+        <section class="grid grid-2">
+          <div class="card">
+            <h3>Search inventory</h3>
+            <form id="catalog-form">
+              <label for="term">Search term</label>
+              <input id="term" name="term" placeholder="Try a product name or category" />
+              <div class="inline-actions">
+                <button type="submit">Search</button>
+                <button type="button" class="secondary" id="reset-btn">Reset</button>
+              </div>
+            </form>
+            <div id="result" class="status">Enter a term to search the product catalog.</div>
+          </div>
+
+          <div class="card">
+            <h3>Inventory results</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                  </tr>
+                </thead>
+                <tbody id="catalog-body">
+                  <tr><td colspan="4">No results loaded yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const form = document.getElementById("catalog-form");
+      const result = document.getElementById("result");
+      const body = document.getElementById("catalog-body");
+      const resetBtn = document.getElementById("reset-btn");
+
+      async function runSearch(term) {
+        const response = await fetch("/api/lab/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ term })
+        });
+
+        const data = await response.json();
+        result.textContent = `Showing ${data.rows?.length || 0} results.`;
+
+        if (data.rows?.length) {
+          body.innerHTML = data.rows.map((row) => `
+            <tr>
+              <td>${row.name}</td>
+              <td>${row.category}</td>
+              <td>$${Number(row.price).toFixed(2)}</td>
+              <td>${row.stock}</td>
+            </tr>
+          `).join("");
+        } else {
+          body.innerHTML = '<tr><td colspan="4">No matching products.</td></tr>';
+        }
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        await runSearch(document.getElementById("term").value);
+      });
+
+      resetBtn.addEventListener("click", () => {
+        document.getElementById("term").value = "";
+        body.innerHTML = '<tr><td colspan="4">No results loaded yet.</td></tr>';
+        result.textContent = "Enter a term to search the product catalog.";
+      });
+
+      runSearch("");
+    </script>
+  </body>
+</html>

@@ -1,560 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NexaCorp — Employee Portal</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #f0f2f5;
-    --card: #ffffff;
-    --primary: #1a56db;
-    --primary-dark: #1341b0;
-    --text: #111827;
-    --muted: #6b7280;
-    --border: #e5e7eb;
-    --danger: #dc2626;
-    --success-bg: #f0fdf4;
-    --success-border: #86efac;
-    --success-text: #166534;
-  }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* ── Top Nav ── */
-  nav {
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
-  }
-
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    text-decoration: none;
-  }
-
-  .logo-icon {
-    width: 32px; height: 32px;
-    background: var(--primary);
-    border-radius: 8px;
-    display: grid; place-items: center;
-    color: #fff;
-    font-weight: 700;
-    font-size: .9rem;
-    letter-spacing: -.5px;
-  }
-
-  .logo-name {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -.3px;
-  }
-
-  .logo-name span { color: var(--primary); }
-
-  .nav-links {
-    display: flex;
-    gap: 1.5rem;
-    list-style: none;
-  }
-
-  .nav-links a {
-    font-size: .85rem;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color .15s;
-  }
-  .nav-links a:hover { color: var(--text); }
-
-  /* ── Main Layout ── */
-  main {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 1rem 2rem;
-    gap: 4rem;
-  }
-
-  /* ── Left promo panel ── */
-  .promo {
-    max-width: 420px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .promo-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: .4rem;
-    background: #eff6ff;
-    color: var(--primary);
-    font-size: .75rem;
-    font-weight: 600;
-    padding: .3rem .75rem;
-    border-radius: 999px;
-    border: 1px solid #bfdbfe;
-    width: fit-content;
-  }
-
-  .promo h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.25;
-    letter-spacing: -.5px;
-  }
-
-  .promo p {
-    color: var(--muted);
-    font-size: .95rem;
-    line-height: 1.65;
-  }
-
-  .features {
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
-  }
-
-  .feature {
-    display: flex;
-    align-items: flex-start;
-    gap: .75rem;
-  }
-
-  .feature-icon {
-    width: 36px; height: 36px;
-    background: #eff6ff;
-    border-radius: 8px;
-    display: grid; place-items: center;
-    flex-shrink: 0;
-    font-size: 1rem;
-  }
-
-  .feature-text strong {
-    display: block;
-    font-size: .875rem;
-    color: var(--text);
-    font-weight: 600;
-  }
-
-  .feature-text span {
-    font-size: .8rem;
-    color: var(--muted);
-  }
-
-  /* ── Login Card ── */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 24px rgba(0,0,0,.07);
-  }
-
-  .card-header {
-    margin-bottom: 1.75rem;
-  }
-
-  .card-header h2 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -.3px;
-  }
-
-  .card-header p {
-    font-size: .85rem;
-    color: var(--muted);
-    margin-top: .3rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: .3rem;
-    margin-bottom: 1rem;
-  }
-
-  label {
-    font-size: .8rem;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  input {
-    width: 100%;
-    padding: .65rem .9rem;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-size: .9rem;
-    font-family: inherit;
-    color: var(--text);
-    background: #fff;
-    outline: none;
-    transition: border-color .15s, box-shadow .15s;
-  }
-
-  input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(26,86,219,.1);
-  }
-
-  .forgot {
-    text-align: right;
-    margin-top: -.5rem;
-    margin-bottom: .75rem;
-  }
-
-  .forgot a {
-    font-size: .78rem;
-    color: var(--primary);
-    text-decoration: none;
-  }
-  .forgot a:hover { text-decoration: underline; }
-
-  .btn {
-    width: 100%;
-    padding: .7rem;
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: .9rem;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    transition: background .15s, transform .1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: .5rem;
-  }
-
-  .btn:hover { background: var(--primary-dark); }
-  .btn:active { transform: scale(.99); }
-
-  .btn .spinner {
-    width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,.4);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin .6s linear infinite;
-    display: none;
-  }
-
-  .btn.loading .spinner { display: block; }
-  .btn.loading .btn-text { opacity: .7; }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    margin: 1.25rem 0;
-    color: var(--muted);
-    font-size: .78rem;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .sso-btn {
-    width: 100%;
-    padding: .65rem;
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-size: .85rem;
-    font-weight: 500;
-    font-family: inherit;
-    color: var(--text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: .6rem;
-    transition: background .15s;
-  }
-  .sso-btn:hover { background: #f9fafb; }
-
-  .register {
-    text-align: center;
-    margin-top: 1.25rem;
-    font-size: .82rem;
-    color: var(--muted);
-  }
-  .register a { color: var(--primary); text-decoration: none; font-weight: 500; }
-  .register a:hover { text-decoration: underline; }
-
-  /* ── Alert ── */
-  .alert {
-    display: none;
-    padding: .75rem 1rem;
-    border-radius: 8px;
-    font-size: .83rem;
-    margin-bottom: 1rem;
-    line-height: 1.5;
-  }
-
-  .alert.show { display: block; }
-
-  .alert.error {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: var(--danger);
-  }
-
-  .alert.success {
-    background: var(--success-bg);
-    border: 1px solid var(--success-border);
-    color: var(--success-text);
-  }
-
-  /* ── Dashboard overlay (shown after successful login) ── */
-  .dashboard {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #f0f2f5;
-    z-index: 200;
-    flex-direction: column;
-  }
-
-  .dashboard.show { display: flex; }
-
-  .dash-nav {
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
-  }
-
-  .dash-user {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    font-size: .875rem;
-  }
-
-  .avatar {
-    width: 34px; height: 34px;
-    background: var(--primary);
-    border-radius: 50%;
-    display: grid; place-items: center;
-    color: #fff;
-    font-weight: 700;
-    font-size: .85rem;
-  }
-
-  .dash-body {
-    flex: 1;
-    padding: 2rem;
-    max-width: 900px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .dash-body h2 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: .4rem;
-  }
-
-  .dash-body > p {
-    color: var(--muted);
-    font-size: .9rem;
-    margin-bottom: 1.75rem;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.75rem;
-  }
-
-  .stat-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.25rem;
-  }
-
-  .stat-card .label { font-size: .78rem; color: var(--muted); font-weight: 500; }
-  .stat-card .value { font-size: 1.6rem; font-weight: 700; color: var(--text); margin-top: .25rem; }
-  .stat-card .sub   { font-size: .75rem; color: #16a34a; margin-top: .2rem; }
-
-  .data-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  .data-card-header {
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    font-size: .875rem;
-    font-weight: 600;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .badge-role {
-    font-size: .7rem;
-    font-weight: 600;
-    padding: .2rem .6rem;
-    border-radius: 999px;
-    background: #fef3c7;
-    color: #92400e;
-  }
-  .badge-role.admin { background: #fee2e2; color: #991b1b; }
-
-  table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-  th {
-    background: #f9fafb;
-    color: var(--muted);
-    font-weight: 500;
-    text-align: left;
-    padding: .6rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    font-size: .75rem;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-  }
-  td {
-    padding: .7rem 1.25rem;
-    border-bottom: 1px solid #f3f4f6;
-    color: var(--text);
-  }
-  tr:last-child td { border-bottom: none; }
-
-  .logout-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: .35rem .85rem;
-    font-size: .8rem;
-    font-family: inherit;
-    color: var(--muted);
-    cursor: pointer;
-    transition: background .15s;
-  }
-  .logout-btn:hover { background: #f3f4f6; }
-
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    padding: 1.5rem;
-    font-size: .78rem;
-    color: var(--muted);
-    border-top: 1px solid var(--border);
-    background: #fff;
-  }
-
-  @media (max-width: 768px) {
-    .promo { display: none; }
-    .stats { grid-template-columns: 1fr; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexaCorp | Employee Portal</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(100%, 430px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+      padding: 32px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+    }
+    p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    label {
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }
+    .alert {
+      display: none;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+    .alert.error {
+      display: block;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+    }
+    .alert.success {
+      display: block;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .footer {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+    .footer a { color: var(--primary); text-decoration: none; }
+  </style>
 </head>
 <body>
-
-<!-- ── Nav ── -->
-<nav>
-  <a class="nav-logo" href="#">
-    <div class="logo-icon">N</div>
-    <span class="logo-name">Nexa<span>Corp</span></span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="#">Products</a></li>
-    <li><a href="#">Solutions</a></li>
-    <li><a href="#">Support</a></li>
-    <li><a href="#">Contact</a></li>
-  </ul>
-</nav>
-
-<!-- ── Main ── -->
-<main>
-  <!-- Promo -->
-  <div class="promo">
-    <div class="promo-badge">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg>
-      Secure Employee Portal
-    </div>
-    <h1>Welcome back to NexaCorp</h1>
-    <p>Access your dashboard, manage projects, and collaborate with your team — all in one place.</p>
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">📊</div>
-        <div class="feature-text">
-          <strong>Real-time Analytics</strong>
-          <span>Monitor KPIs and team performance live</span>
-        </div>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔒</div>
-        <div class="feature-text">
-          <strong>Enterprise Security</strong>
-          <span>Role-based access control and audit logs</span>
-        </div>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🤝</div>
-        <div class="feature-text">
-          <strong>Team Collaboration</strong>
-          <span>Shared workspaces and project tracking</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Login Card -->
   <div class="card">
-    <div class="card-header">
-      <h2>Sign in to your account</h2>
-      <p>Enter your credentials to access the portal</p>
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <strong>NexaCorp</strong><br/>
+        <span style="color:var(--muted);font-size:0.9rem;">Employee Portal</span>
+      </div>
     </div>
 
-    <div class="alert error" id="alert-error"></div>
-    <div class="alert success" id="alert-success"></div>
+    <h1>Sign in to continue</h1>
+    <p>Access your dashboard, internal catalog, and daily operations from one secure place.</p>
+
+    <div id="alert" class="alert"></div>
 
     <div class="form-group">
       <label for="username">Username</label>
@@ -566,182 +145,53 @@
       <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" />
     </div>
 
-    <div class="forgot"><a href="#">Forgot password?</a></div>
+    <button class="btn" id="login-btn" type="button">Sign In</button>
 
-    <button class="btn" id="login-btn" onclick="doLogin()">
-      <div class="spinner"></div>
-      <span class="btn-text">Sign In</span>
-    </button>
-
-    <div class="divider">or continue with</div>
-
-    <button class="sso-btn">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></svg>
-      Sign in with Google SSO
-    </button>
-
-    <div class="register">Don't have an account? <a href="#">Request access</a></div>
-  </div>
-</main>
-
-<footer>© 2025 NexaCorp Inc. All rights reserved. &nbsp;·&nbsp; <a href="#" style="color:inherit">Privacy Policy</a> &nbsp;·&nbsp; <a href="#" style="color:inherit">Terms of Service</a></footer>
-
-<!-- ── Dashboard (shown after login) ── -->
-<div class="dashboard" id="dashboard">
-  <div class="dash-nav">
-    <a class="nav-logo" href="#">
-      <div class="logo-icon">N</div>
-      <span class="logo-name">Nexa<span>Corp</span></span>
-    </a>
-    <div class="dash-user">
-      <div id="dash-avatar" class="avatar">A</div>
-      <div>
-        <div style="font-weight:600;color:#111827" id="dash-name">Admin</div>
-        <div style="font-size:.75rem;color:#6b7280" id="dash-role">Administrator</div>
-      </div>
-      <button class="logout-btn" onclick="logout()">Sign out</button>
-    </div>
+    <div class="footer">Need access? <a href="#">Contact IT</a></div>
   </div>
 
-  <div class="dash-body">
-    <h2 id="dash-greeting">Welcome back 👋</h2>
-    <p>Here's what's happening across your organization today.</p>
+  <script>
+    const loginBtn = document.getElementById("login-btn");
+    const alertBox = document.getElementById("alert");
 
-    <div class="stats">
-      <div class="stat-card">
-        <div class="label">Active Employees</div>
-        <div class="value">1,284</div>
-        <div class="sub">↑ 3.2% this month</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Open Projects</div>
-        <div class="value">47</div>
-        <div class="sub">↑ 5 new this week</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Pending Approvals</div>
-        <div class="value">12</div>
-        <div class="sub" style="color:#dc2626">↑ Needs attention</div>
-      </div>
-    </div>
+    function showAlert(message, type = "error") {
+      alertBox.textContent = message;
+      alertBox.className = "alert " + type;
+    }
 
-    <div class="data-card">
-      <div class="data-card-header">
-        <span>Employee Records — Confidential</span>
-        <span id="dash-badge" class="badge-role">user</span>
-      </div>
-      <table id="dash-table">
-        <thead>
-          <tr>
-            <th>ID</th><th>Username</th><th>Email</th><th>Role</th>
-          </tr>
-        </thead>
-        <tbody id="dash-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+    loginBtn.addEventListener("click", async () => {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
 
-<script>
-  async function doLogin() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
-    const btn = document.getElementById('login-btn');
-    const errEl = document.getElementById('alert-error');
-    const okEl  = document.getElementById('alert-success');
-
-    errEl.classList.remove('show');
-    okEl.classList.remove('show');
-
-    if (!username) { showError('Please enter your username.'); return; }
-
-    btn.classList.add('loading');
-    btn.disabled = true;
-
-    try {
-      const res = await fetch('/api/lab/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-
-      if (data.error) {
-        showError('Database error: ' + data.error);
+      if (!username || !password) {
+        showAlert("Please enter both your username and password.");
         return;
       }
 
-      if (data.success && data.user) {
-        showDashboard(data.user);
-      } else {
-        showError('Invalid username or password. Please try again.');
-      }
-    } catch {
-      showError('Unable to reach the server. Please try again later.');
-    } finally {
-      btn.classList.remove('loading');
-      btn.disabled = false;
-    }
-  }
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Signing in...";
 
-  function showError(msg) {
-    const el = document.getElementById('alert-error');
-    el.textContent = msg;
-    el.classList.add('show');
-  }
-
-  async function showDashboard(user) {
-    // populate header
-    const name = String(user.username);
-    document.getElementById('dash-avatar').textContent = name[0].toUpperCase();
-    document.getElementById('dash-name').textContent = name;
-    document.getElementById('dash-role').textContent = user.role === 'admin' ? 'Administrator' : 'Employee';
-    document.getElementById('dash-greeting').textContent = `Welcome back, ${name} 👋`;
-    const badge = document.getElementById('dash-badge');
-    badge.textContent = String(user.role);
-    badge.className = 'badge-role' + (user.role === 'admin' ? ' admin' : '');
-
-    // if admin, fetch all users to show in table
-    if (user.role === 'admin') {
       try {
-        const r = await fetch('/api/lab/search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ term: '' })
+        const res = await fetch("/api/lab/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
         });
-        const d = await r.json();
-        const tbody = document.getElementById('dash-tbody');
-        tbody.innerHTML = (d.rows || []).map(u =>
-          `<tr>
-            <td>${u.id}</td>
-            <td><strong>${u.username}</strong></td>
-            <td>${u.email}</td>
-            <td><span class="badge-role ${u.role === 'admin' ? 'admin' : ''}">${u.role}</span></td>
-          </tr>`
-        ).join('');
-      } catch { /* silent */ }
-    } else {
-      document.getElementById('dash-tbody').innerHTML =
-        `<tr><td colspan="4" style="color:#6b7280;text-align:center;padding:1.5rem">
-          Access restricted — admin privileges required to view employee records.
-        </td></tr>`;
-    }
 
-    document.getElementById('dashboard').classList.add('show');
-  }
+        const data = await res.json();
 
-  function logout() {
-    document.getElementById('dashboard').classList.remove('show');
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
-    document.getElementById('alert-error').classList.remove('show');
-    document.getElementById('alert-success').classList.remove('show');
-  }
-
-  // allow Enter key to submit
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
-</script>
+        if (data.success && data.user) {
+          window.location.href = "/dashboard.html";
+        } else {
+          showAlert("Invalid username or password.");
+        }
+      } catch {
+        showAlert("Unable to reach the server right now.");
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Sign In";
+      }
+    });
+  </script>
 </body>
 </html>

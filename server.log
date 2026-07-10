@@ -1,0 +1,16 @@
+[INFO] 07:06:11 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.9.3)
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at Function.listen (c:\Users\azari\Documents\Dev_projects\SQL-injection-lab\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (c:\Users\azari\Documents\Dev_projects\SQL-injection-lab\src\index.ts:11:5)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1706:14)
+    at Module._compile (c:\Users\azari\Documents\Dev_projects\SQL-injection-lab\node_modules\source-map-support\source-map-support.js:568:25)
+    at Module.m._compile (C:\Users\azari\AppData\Local\Temp\ts-node-dev-hook-2668088579695391.js:69:33)
+    at node:internal/modules/cjs/loader:1839:10
+    at require.extensions..jsx.require.extensions..js (C:\Users\azari\AppData\Local\Temp\ts-node-dev-hook-2668088579695391.js:114:20)
+[ERROR] 07:06:29 Error: listen EADDRINUSE: address already in use :::3000
+[INFO] 08:31:36 Restarting: c:\Users\azari\Documents\Dev_projects\SQL-injection-lab\src\db.ts has been modified
+SQL Injection Lab → http://localhost:3000
+[INFO] 10:11:52 Restarting: c:\Users\azari\Documents\Dev_projects\SQL-injection-lab\src\routes\lab.ts has been modified

@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NexaCorp Catalog</title>
     <link rel="stylesheet" href="/dashboard.css" />
+    <style>
+      .flag-banner {
+        display: none;
+        margin-top: 12px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: #fefce8;
+        border: 1px solid #fde047;
+        color: #713f12;
+        font-family: monospace;
+        font-size: 0.88rem;
+        word-break: break-all;
+      }
+      .flag-banner.show { display: block; }
+    </style>
   </head>
   <body>
     <div class="dashboard-shell">
@@ -20,7 +35,7 @@
         <nav class="sidebar-nav">
           <a href="/dashboard.html">Overview</a>
           <a class="active" href="/catalog.html">Product Catalog</a>
-          <a href="/">Sign Out</a>
+          <a href="/" id="signout-link">Sign Out</a>
         </nav>
 
         <div class="sidebar-card">
@@ -50,6 +65,7 @@
               </div>
             </form>
             <div id="result" class="status">Enter a term to search the product catalog.</div>
+            <div id="flag-banner" class="flag-banner"></div>
           </div>
 
           <div class="card">
@@ -75,47 +91,75 @@
     </div>
 
     <script>
-      const form = document.getElementById("catalog-form");
-      const result = document.getElementById("result");
-      const body = document.getElementById("catalog-body");
-      const resetBtn = document.getElementById("reset-btn");
+      // ── Auth guard ───────────────────────────────────────────────────────
+      const token = localStorage.getItem("token");
 
-      async function runSearch(term) {
-        const response = await fetch("/api/lab/products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ term })
+      (async () => {
+        if (!token) { window.location.replace("/"); return; }
+        const check = await fetch("/api/lab/me", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        if (!check.ok) { localStorage.removeItem("token"); window.location.replace("/"); return; }
+
+        initPage();
+      })();
+
+      document.getElementById("signout-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        window.location.href = "/";
+      });
+
+      function initPage() {
+        const form = document.getElementById("catalog-form");
+        const result = document.getElementById("result");
+        const body = document.getElementById("catalog-body");
+        const resetBtn = document.getElementById("reset-btn");
+        const flagBanner = document.getElementById("flag-banner");
+
+        async function runSearch(term) {
+          const response = await fetch("/api/lab/products", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+            body: JSON.stringify({ term })
+          });
+
+          const data = await response.json();
+          result.textContent = `Showing ${data.rows?.length || 0} results.`;
+
+          if (data.flag) {
+            flagBanner.textContent = "🏆 Flag captured: " + data.flag;
+            flagBanner.className = "flag-banner show";
+          }
+
+          if (data.rows?.length) {
+            body.innerHTML = data.rows.map((row) => `
+              <tr>
+                <td>${row.name ?? ""}</td>
+                <td>${row.category ?? ""}</td>
+                <td>${row.price != null ? "$" + Number(row.price).toFixed(2) : ""}</td>
+                <td>${row.stock ?? ""}</td>
+              </tr>
+            `).join("");
+          } else {
+            body.innerHTML = '<tr><td colspan="4">No matching products.</td></tr>';
+          }
+        }
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          await runSearch(document.getElementById("term").value);
         });
 
-        const data = await response.json();
-        result.textContent = `Showing ${data.rows?.length || 0} results.`;
+        resetBtn.addEventListener("click", () => {
+          document.getElementById("term").value = "";
+          body.innerHTML = '<tr><td colspan="4">No results loaded yet.</td></tr>';
+          result.textContent = "Enter a term to search the product catalog.";
+          flagBanner.className = "flag-banner";
+        });
 
-        if (data.rows?.length) {
-          body.innerHTML = data.rows.map((row) => `
-            <tr>
-              <td>${row.name}</td>
-              <td>${row.category}</td>
-              <td>$${Number(row.price).toFixed(2)}</td>
-              <td>${row.stock}</td>
-            </tr>
-          `).join("");
-        } else {
-          body.innerHTML = '<tr><td colspan="4">No matching products.</td></tr>';
-        }
+        runSearch("");
       }
-
-      form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        await runSearch(document.getElementById("term").value);
-      });
-
-      resetBtn.addEventListener("click", () => {
-        document.getElementById("term").value = "";
-        body.innerHTML = '<tr><td colspan="4">No results loaded yet.</td></tr>';
-        result.textContent = "Enter a term to search the product catalog.";
-      });
-
-      runSearch("");
     </script>
   </body>
 </html>

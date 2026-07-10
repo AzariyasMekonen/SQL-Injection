@@ -5,6 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NexaCorp Dashboard</title>
     <link rel="stylesheet" href="/dashboard.css" />
+    <style>
+      .flag-banner {
+        display: none;
+        margin: 10px 0 4px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #fefce8;
+        border: 1px solid #fde047;
+        color: #713f12;
+        font-family: monospace;
+        font-size: 0.88rem;
+        word-break: break-all;
+      }
+      .flag-banner.show { display: block; }
+      .query-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 0.78rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+        margin: 8px 0 0;
+        color: #334155;
+        min-height: 0;
+      }
+      #craft-form input, #search-form input {
+        width: 100%;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 9px 12px;
+        font-size: 0.9rem;
+        margin-top: 4px;
+      }
+      #craft-form label, #search-form label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+      }
+    </style>
   </head>
   <body>
     <div class="dashboard-shell">
@@ -20,7 +60,7 @@
         <nav class="sidebar-nav">
           <a class="active" href="/dashboard.html">Overview</a>
           <a href="/catalog.html">Product Catalog</a>
-          <a href="/">Sign Out</a>
+          <a href="/" id="signout-link">Sign Out</a>
         </nav>
 
         <div class="sidebar-card">
@@ -77,8 +117,104 @@
     </div>
 
     <script>
+      // ── Auth guard ───────────────────────────────────────────────────────
+      const token = localStorage.getItem("token");
+
+      (async () => {
+        if (!token) { window.location.replace("/"); return; }
+        const check = await fetch("/api/lab/me", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        if (!check.ok) { localStorage.removeItem("token"); window.location.replace("/"); return; }
+
+        // Token valid — boot the page
+        initPage();
+      })();
+
+      document.getElementById("signout-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        window.location.href = "/";
+      });
+
+      function authHeaders() {
+        return { "Content-Type": "application/json", "Authorization": "Bearer " + token };
+      }
+
+      function initPage() {
+        loadDashboardData();
+
+        // ── Lab 1: Craft the Payload ────────────────────────────────────────
+        document.getElementById("craft-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const username = document.getElementById("craft-input").value;
+          const res = await fetch("/api/lab/craft", {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({ username })
+          });
+          const data = await res.json();
+
+          document.getElementById("craft-query").textContent = data.query ?? "";
+
+          const flagEl = document.getElementById("craft-flag");
+          if (data.flag) {
+            flagEl.textContent = "🏆 Flag captured: " + data.flag;
+            flagEl.className = "flag-banner show";
+          } else {
+            flagEl.className = "flag-banner";
+          }
+
+          const body = document.getElementById("craft-body");
+          if (data.rows?.length) {
+            body.innerHTML = data.rows.map(r =>
+              `<tr><td>${r.id ?? ""}</td><td>${r.username ?? ""}</td><td>${r.role ?? ""}</td></tr>`
+            ).join("");
+          } else {
+            body.innerHTML = data.error
+              ? `<tr><td colspan="3" style="color:#dc2626">${data.error}</td></tr>`
+              : '<tr><td colspan="3">No rows returned.</td></tr>';
+          }
+        });
+
+        // ── Lab 3: Dump the Table ───────────────────────────────────────────
+        document.getElementById("search-form").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const term = document.getElementById("search-input").value;
+          const res = await fetch("/api/lab/search", {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({ term })
+          });
+          const data = await res.json();
+
+          document.getElementById("search-query").textContent = data.query ?? "";
+
+          const flagEl = document.getElementById("search-flag");
+          if (data.flag) {
+            flagEl.textContent = "🏆 Flag captured: " + data.flag;
+            flagEl.className = "flag-banner show";
+          } else {
+            flagEl.className = "flag-banner";
+          }
+
+          const body = document.getElementById("search-body");
+          if (data.rows?.length) {
+            body.innerHTML = data.rows.map(r =>
+              `<tr><td>${r.id ?? ""}</td><td>${r.username ?? ""}</td><td>${r.email ?? ""}</td><td>${r.role ?? ""}</td></tr>`
+            ).join("");
+          } else {
+            body.innerHTML = data.error
+              ? `<tr><td colspan="4" style="color:#dc2626">${data.error}</td></tr>`
+              : '<tr><td colspan="4">No rows returned.</td></tr>';
+          }
+        });
+      }
+
       async function loadDashboardData() {
-        const response = await fetch('/api/lab/stats');
+        const response = await fetch('/api/lab/stats', {
+          headers: { "Authorization": "Bearer " + token }
+        });
         const data = await response.json();
 
         document.getElementById('users-count').textContent = data.stats?.users ?? 0;
@@ -102,8 +238,6 @@
           </tr>
         `).join('');
       }
-
-      loadDashboardData();
     </script>
   </body>
 </html>
